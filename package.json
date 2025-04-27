@@ -1,0 +1,9 @@
+{
+  "name": "rhf-field-errors-extractor",
+  "version": "1.0.0",
+  "description": "Extract a single representative error message from React Hook Form FieldErrors.",
+  "main": "index.js",
+  "repository": "https://hangem422@github.com/hangem422/rhf-field-errors-extractor.git",
+  "author": "Hant <hangem422@gmail.com>",
+  "license": "MIT"
+}
