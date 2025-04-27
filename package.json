@@ -1,0 +1,18 @@
+{
+  "name": "rhf-field-errors-extractor",
+  "version": "1.0.0",
+  "description": "Extract a single representative error message from React Hook Form FieldErrors.",
+  "main": "index.js",
+  "repository": "https://hangem422@github.com/hangem422/rhf-field-errors-extractor.git",
+  "author": "Hant <hangem422@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.15.2",
+    "eslint": "^9.25.1",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-prettier": "^5.2.6",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.31.0"
+  }
+}
