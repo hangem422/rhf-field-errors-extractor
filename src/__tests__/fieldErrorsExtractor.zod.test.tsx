@@ -5,9 +5,10 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { z } from 'zod';
 
-import { SingleErrorMessageExtractor } from '../SingleErrorMessageExtractor';
+import { MessageExistExtractOrder } from '../extractOrders';
+import { FieldErrorExtractor } from '../fieldErrorExtractor';
 
-describe('SingleErrorMessageExtractor', () => {
+describe('FieldErrorExtractor', () => {
   const submitResultTestFn = jest.fn();
   const invlaidSubmitResultTestFn = jest.fn();
 
@@ -36,8 +37,8 @@ describe('SingleErrorMessageExtractor', () => {
               submitResultTestFn(data);
             },
             (error) => {
-              const extractor = new SingleErrorMessageExtractor();
-              invlaidSubmitResultTestFn(extractor.extract(error));
+              const extractor = new FieldErrorExtractor(error);
+              invlaidSubmitResultTestFn(extractor.extractMessage([new MessageExistExtractOrder()]));
             },
           )}
         >
