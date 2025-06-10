@@ -6,7 +6,7 @@ import userEvent from '@testing-library/user-event';
 import { z } from 'zod';
 
 import { MessageExistExtractOrder } from '../extractOrders';
-import { FieldErrorExtractor } from '../FieldErrorExtractor';
+import { FieldErrorExtractor } from '../fieldErrorExtractor';
 
 describe('FieldErrorExtractor', () => {
   const submitResultTestFn = jest.fn();
