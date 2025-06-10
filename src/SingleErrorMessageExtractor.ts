@@ -8,7 +8,7 @@ export class SingleErrorMessageExtractor {
   }
 
   private extractFromErorr(error: unknown): string | undefined {
-    if (typeof error !== 'object' || error === null) {
+    if (typeof error !== 'object' || error === null || error instanceof HTMLElement) {
       return undefined;
     }
 
