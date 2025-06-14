@@ -6,12 +6,11 @@ import { FieldErrorData } from './logics/fieldErrorData';
 export class FieldErrorExtractor<TFieldValues extends FieldValues> {
   constructor(private readonly fieldErrors: FieldErrors<TFieldValues>) {}
 
-  public extractMessage(orders: Array<FieldErrorDataOrder> = []): string | undefined {
-    const error = this.extractData(this.fieldErrors, orders);
-    return error?.message;
+  public extract(orders: Array<FieldErrorDataOrder> = []): FieldErrorData {
+    return this.extractRecursively(this.fieldErrors, orders);
   }
 
-  private extractData(error: unknown, orders: Array<FieldErrorDataOrder> = []): FieldErrorData {
+  private extractRecursively(error: unknown, orders: Array<FieldErrorDataOrder> = []): FieldErrorData {
     if (typeof error !== 'object' || error === null || error instanceof HTMLElement) {
       return new FieldErrorData(undefined, undefined);
     }
@@ -21,7 +20,7 @@ export class FieldErrorExtractor<TFieldValues extends FieldValues> {
     // - Therefore, in extractFromError, the error parameter is typed as unknown.
     // - If the parameter is neither a GlobalError nor a FieldError, the function iterates through all properties to extract messages.
     return Object.values(error).reduce<FieldErrorData>((acc, cur) => {
-      const extractedFieldError = this.extractData(cur, orders);
+      const extractedFieldError = this.extractRecursively(cur, orders);
       return acc.compare(extractedFieldError, orders);
     }, FieldErrorData.fromError(error));
   }

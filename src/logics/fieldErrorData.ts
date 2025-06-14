@@ -5,7 +5,7 @@ export enum CompareFieldErrorDataResult {
 }
 
 export interface FieldErrorDataOrder {
-  compare(error: FieldErrorData, error2: FieldErrorData): CompareFieldErrorDataResult;
+  compare(data1: FieldErrorData, data2: FieldErrorData): CompareFieldErrorDataResult;
 }
 
 export class FieldErrorData {
@@ -21,6 +21,10 @@ export class FieldErrorData {
     public readonly element: HTMLElement | undefined,
   ) {}
 
+  public isEmpty() {
+    return this.message === undefined && this.element === undefined;
+  }
+
   public compare(data: FieldErrorData, orders: Array<FieldErrorDataOrder> = []): FieldErrorData {
     for (const order of orders) {
       const result = order.compare(this, data);
@@ -31,6 +35,13 @@ export class FieldErrorData {
       if (result === CompareFieldErrorDataResult.Second) {
         return data;
       }
+    }
+
+    if (this.isEmpty() && data.isEmpty()) {
+      return this;
+    }
+    if (this.isEmpty()) {
+      return data;
     }
 
     return this;
