@@ -1,5 +1,3 @@
-import type { FieldElement } from 'react-hook-form';
-
 export enum CompareFieldErrorDataResult {
   First,
   Second,
@@ -11,9 +9,16 @@ export interface FieldErrorDataOrder {
 }
 
 export class FieldErrorData {
+  public static fromError(error: object): FieldErrorData {
+    const message = 'message' in error && typeof error.message === 'string' ? error.message : undefined;
+    const element = 'ref' in error && error.ref instanceof HTMLElement ? error.ref : undefined;
+
+    return new FieldErrorData(message, element);
+  }
+
   constructor(
     public readonly message: string | undefined,
-    public readonly element: FieldElement | undefined,
+    public readonly element: HTMLElement | undefined,
   ) {}
 
   public compare(data: FieldErrorData, orders: Array<FieldErrorDataOrder> = []): FieldErrorData {
