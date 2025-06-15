@@ -38,8 +38,32 @@ errorData.element?.focus();
 
 When you pass the `FieldErrorDataOrder` array as a parameter to the extract method, it finds the most appropriate error data from `FieldErrors`. The `FieldErrorDataOrder` is applied in order, and in the example above, it extracts the error data from the `FieldError` that has a message and appears first in DOM order.
 
-- `MessageExistExtractOrder({ trim: boolean })`: `FieldError` that contain a message are prioritized. When comparing `undefined` and an empty string, the empty string takes precedence. The `trim` option determines whether to trim the message of a `FieldError` before comparison.
-- `DomPlaceExtractOrder()`: `FieldError` that appear earlier in the DOM are given higher priority. `FieldError` without an assigned ref have the lowest priority.
+#### MessageExistExtractOrder
+
+```
+MessageExistExtractOrder({ trim: boolean })
+```
+
+`FieldError` that contain a message are prioritized. When comparing `undefined` and an empty string, the empty string takes precedence. The `trim` option determines whether to trim the message of a `FieldError` before comparison.
+
+#### DomPlaceExtractOrder
+
+```
+DomPlaceExtractOrder()
+```
+
+`FieldError` that appear earlier in the DOM are given higher priority. `FieldError` without an assigned ref have the lowest priority.
+
+#### MatchedNameExtractOrder
+
+```
+MatchedNameExtractOrder<
+  TFieldValues extends FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>(nameList: Array<TFieldName>, { exact: boolean })
+```
+
+Priority is determined by matching the name of the field where the error occurred. The order of the `nameList` array defines the priority. If the `exact` option is enabled, the field name must match exactly to be considered for priority.
 
 ## Custom Extract Order
 
