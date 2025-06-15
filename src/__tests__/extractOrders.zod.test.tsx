@@ -4,7 +4,7 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { z } from 'zod';
 
-import { DomPlaceExtractOrder, MessageExistExtractOrder } from '../extractOrders';
+import { DomPlaceExtractOrder, MatchedNameExtractOrder, MessageExistExtractOrder } from '../extractOrders';
 import { FieldErrorExtractor } from '../fieldErrorExtractor';
 
 import { SubmitButtonTextContent, TestZodFormComponent } from './components/TestZodFormComponent';
@@ -76,7 +76,7 @@ describe('MessageExistExtractOrder prioritizes data with error messages.', () =>
         onSubmitInvalid={(fieldErrors) => {
           const extractor = new FieldErrorExtractor(fieldErrors);
           const errorData = extractor.extract([new MessageExistExtractOrder({ trim: true })]);
-          invlaidSubmitResultTestFn(errorData.message);
+          invlaidSubmitResultTestFn(errorData?.message);
         }}
       >
         <TestFields />
@@ -143,7 +143,7 @@ describe('DomPlaceExtractOrder prioritizes data where the element is located fur
         onSubmitInvalid={(fieldErrors) => {
           const extractor = new FieldErrorExtractor(fieldErrors);
           const errorData = extractor.extract([new DomPlaceExtractOrder()]);
-          invlaidSubmitResultTestFn(errorData.message);
+          invlaidSubmitResultTestFn(errorData?.message);
         }}
       >
         <TestFields />
@@ -159,4 +159,124 @@ describe('DomPlaceExtractOrder prioritizes data where the element is located fur
     await user.click(getByText(SubmitButtonTextContent));
     expect(submitResultTestFn).toHaveBeenCalled();
   }
+});
+
+describe('MatchedNameExtractOrder prioritizes data based on name matching.', () => {
+  const formFiledValuesSchema = z.object({
+    fruit: z.object({
+      apple: z.string().min(8, 'apple error message'),
+    }),
+    animal: z.object({
+      cat: z.string().min(8, 'cat error message'),
+      dog: z.string().min(8, 'dog error message'),
+    }),
+  });
+
+  const TestFields = () => {
+    const { register } = useFormContext<
+      z.input<typeof formFiledValuesSchema>,
+      unknown,
+      z.output<typeof formFiledValuesSchema>
+    >();
+
+    return (
+      <fieldset>
+        <input placeholder="apple" {...register('fruit.apple')} />
+        <input placeholder="cat" {...register('animal.cat')} />
+        <input placeholder="dog" {...register('animal.dog')} />
+      </fieldset>
+    );
+  };
+
+  test('If the exit option is turned off', async () => {
+    const user = userEvent.setup();
+    const { getByPlaceholderText, getByText } = render(
+      <TestZodFormComponent
+        schema={formFiledValuesSchema}
+        defaultValues={{
+          fruit: { apple: '' },
+          animal: { cat: '', dog: '' },
+        }}
+        onSubmitValid={(data) => {
+          submitResultTestFn(data);
+        }}
+        onSubmitInvalid={(fieldErrors) => {
+          const extractor = new FieldErrorExtractor(fieldErrors);
+          const errorData = extractor.extract([
+            new MatchedNameExtractOrder<z.input<typeof formFiledValuesSchema>>(['fruit', 'animal.dog', 'animal.cat'], {
+              exact: false,
+            }),
+          ]);
+
+          invlaidSubmitResultTestFn(errorData?.message);
+        }}
+      >
+        <TestFields />
+      </TestZodFormComponent>,
+    );
+
+    await user.click(getByText(SubmitButtonTextContent));
+    expect(submitResultTestFn).not.toHaveBeenCalled();
+    expect(invlaidSubmitResultTestFn).toHaveBeenLastCalledWith('apple error message');
+
+    await user.type(getByPlaceholderText('apple'), 'hello world test');
+    await user.click(getByText(SubmitButtonTextContent));
+    expect(submitResultTestFn).not.toHaveBeenCalled();
+    expect(invlaidSubmitResultTestFn).toHaveBeenLastCalledWith('dog error message');
+
+    await user.type(getByPlaceholderText('dog'), 'hello world test');
+    await user.click(getByText(SubmitButtonTextContent));
+    expect(submitResultTestFn).not.toHaveBeenCalled();
+    expect(invlaidSubmitResultTestFn).toHaveBeenLastCalledWith('cat error message');
+
+    await user.type(getByPlaceholderText('cat'), 'hello world test');
+    await user.click(getByText(SubmitButtonTextContent));
+    expect(submitResultTestFn).toHaveBeenCalled();
+  });
+
+  test('If the exit option is turned on', async () => {
+    const user = userEvent.setup();
+    const { getByPlaceholderText, getByText } = render(
+      <TestZodFormComponent
+        schema={formFiledValuesSchema}
+        defaultValues={{
+          fruit: { apple: '' },
+          animal: { cat: '', dog: '' },
+        }}
+        onSubmitValid={(data) => {
+          submitResultTestFn(data);
+        }}
+        onSubmitInvalid={(fieldErrors) => {
+          const extractor = new FieldErrorExtractor(fieldErrors);
+          const errorData = extractor.extract([
+            new MatchedNameExtractOrder<z.input<typeof formFiledValuesSchema>>(['fruit', 'animal.dog', 'animal.cat'], {
+              exact: true,
+            }),
+          ]);
+
+          invlaidSubmitResultTestFn(errorData?.message);
+        }}
+      >
+        <TestFields />
+      </TestZodFormComponent>,
+    );
+
+    await user.click(getByText(SubmitButtonTextContent));
+    expect(submitResultTestFn).not.toHaveBeenCalled();
+    expect(invlaidSubmitResultTestFn).toHaveBeenLastCalledWith('dog error message');
+
+    await user.type(getByPlaceholderText('dog'), 'hello world test');
+    await user.click(getByText(SubmitButtonTextContent));
+    expect(submitResultTestFn).not.toHaveBeenCalled();
+    expect(invlaidSubmitResultTestFn).toHaveBeenLastCalledWith('cat error message');
+
+    await user.type(getByPlaceholderText('cat'), 'hello world test');
+    await user.click(getByText(SubmitButtonTextContent));
+    expect(submitResultTestFn).not.toHaveBeenCalled();
+    expect(invlaidSubmitResultTestFn).toHaveBeenLastCalledWith('apple error message');
+
+    await user.type(getByPlaceholderText('apple'), 'hello world test');
+    await user.click(getByText(SubmitButtonTextContent));
+    expect(submitResultTestFn).toHaveBeenCalled();
+  });
 });

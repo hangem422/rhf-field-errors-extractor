@@ -9,21 +9,22 @@ export interface FieldErrorDataOrder {
 }
 
 export class FieldErrorData {
-  public static fromError(error: object): FieldErrorData {
+  public static fromError(name: string, error: object): FieldErrorData | undefined {
     const message = 'message' in error && typeof error.message === 'string' ? error.message : undefined;
     const element = 'ref' in error && error.ref instanceof HTMLElement ? error.ref : undefined;
 
-    return new FieldErrorData(message, element);
+    if (message === undefined && element === undefined) {
+      return undefined;
+    }
+
+    return new FieldErrorData(name, message, element);
   }
 
-  constructor(
+  private constructor(
+    public readonly name: string,
     public readonly message: string | undefined,
     public readonly element: HTMLElement | undefined,
   ) {}
-
-  public isEmpty() {
-    return this.message === undefined && this.element === undefined;
-  }
 
   public compare(data: FieldErrorData, orders: Array<FieldErrorDataOrder> = []): FieldErrorData {
     for (const order of orders) {
@@ -35,13 +36,6 @@ export class FieldErrorData {
       if (result === CompareFieldErrorDataResult.Second) {
         return data;
       }
-    }
-
-    if (this.isEmpty() && data.isEmpty()) {
-      return this;
-    }
-    if (this.isEmpty()) {
-      return data;
     }
 
     return this;

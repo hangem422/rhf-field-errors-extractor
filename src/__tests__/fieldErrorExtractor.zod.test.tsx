@@ -54,7 +54,7 @@ describe('Does the FieldErrorExtractor extract data well for various field types
         }}
         onSubmitInvalid={(fieldErrors) => {
           const extractor = new FieldErrorExtractor(fieldErrors);
-          invlaidSubmitResultTestFn(extractor.extract().message);
+          invlaidSubmitResultTestFn(extractor.extract()?.message);
         }}
       >
         <TestFields />
@@ -125,7 +125,7 @@ describe('Does the FieldErrorExtractor extract data well for various field types
         }}
         onSubmitInvalid={(fieldErrors) => {
           const extractor = new FieldErrorExtractor(fieldErrors);
-          invlaidSubmitResultTestFn(extractor.extract().message);
+          invlaidSubmitResultTestFn(extractor.extract()?.message);
         }}
       >
         <TestFields />
@@ -188,7 +188,7 @@ describe('Does the FieldErrorExtractor extract data well for various field types
         }}
         onSubmitInvalid={(fieldErrors) => {
           const extractor = new FieldErrorExtractor(fieldErrors);
-          invlaidSubmitResultTestFn(extractor.extract().message);
+          invlaidSubmitResultTestFn(extractor.extract()?.message);
         }}
       >
         <TestFields />
