@@ -2,7 +2,71 @@
 
 Extract a single representative error message from React Hook Form FieldErrors.
 
-## About React Hook Form FieldErrors
+## How To Use
+
+### Extract Error Data
+
+```tsx
+const formMethod = useForm();
+
+const handleSubmit = formMethod.handleSubmit(
+  (data) => {
+    // ...
+  },
+  (fieldErrors) => {
+    const extractor = new FieldErrorExtractor(fieldErrors);
+    const errorData = extractor.extract();
+
+    window.alert(errorData.message);
+    errorData.element?.focus();
+  },
+);
+```
+
+- message: Field error messages registered with React Hook Form
+- element: It can be used if the ref of the field is assigned to the component.
+
+### Setting Error Priority
+
+```tsx
+const extractor = new FieldErrorExtractor(fieldErrors);
+const errorData = extractor.extract([new MessageExistExtractOrder({ trim: true }), new DomPlaceExtractOrder()]);
+
+window.alert(errorData.message);
+errorData.element?.focus();
+```
+
+When you pass the `FieldErrorDataOrder` array as a parameter to the extract method, it finds the most appropriate error data from `FieldErrors`. The `FieldErrorDataOrder` is applied in order, and in the example above, it extracts the error data from the `FieldError` that has a message and appears first in DOM order.
+
+- `MessageExistExtractOrder({ trim: boolean })`: `FieldError` that contain a message are prioritized. When comparing `undefined` and an empty string, the empty string takes precedence. The `trim` option determines whether to trim the message of a `FieldError` before comparison.
+- `DomPlaceExtractOrder()`: `FieldError` that appear earlier in the DOM are given higher priority. `FieldError` without an assigned ref have the lowest priority.
+
+## Custom Extract Order
+
+```tsx
+class CustomExtractOrder implements FieldErrorDataOrder {
+  public compare(data1: FieldErrorData, data2: FieldErrorData): CompareFieldErrorDataResult {
+    if (this.isFirstDataSelected()) {
+      return CompareFieldErrorDataResult.First;
+    }
+
+    if (this.isSecondDataSelected()) {
+      return CompareFieldErrorDataResult.Second;
+    }
+
+    return CompareFieldErrorDataResult.Equal;
+  }
+}
+
+const extractor = new FieldErrorExtractor(fieldErrors);
+const errorData = extractor.extract([new CustomExtractOrder()]);
+```
+
+You can customize the priority logic by implementing the `compare` method in a class that extends the `FieldErrorDataOrder` interface, and passing it to the `extract` method of `FieldErrorExtractor`.
+
+## Background Knowledge
+
+### About React Hook Form FieldErrors
 
 ```ts
 type FieldErrors<T extends FieldValues = FieldValues> = Partial<
