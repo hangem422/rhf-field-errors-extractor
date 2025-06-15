@@ -1,40 +1,11 @@
-import type { PropsWithChildren } from 'react';
-import type { SubmitErrorHandler, SubmitHandler } from 'react-hook-form';
-import { FormProvider, useFieldArray, useForm, useFormContext } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useFieldArray, useFormContext } from 'react-hook-form';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { z } from 'zod';
 
 import { FieldErrorExtractor } from '../fieldErrorExtractor';
 
-const SubmitButtonTextContent = 'Submit';
-
-type TestFormComponentProps<Schema extends z.ZodTypeAny> = {
-  schema: Schema;
-  defaultValues: z.input<Schema>;
-  onSubmitValid: SubmitHandler<z.output<Schema>>;
-  onSubmitInvalid?: SubmitErrorHandler<z.input<Schema>>;
-};
-
-function TestFormComponent<Schema extends z.ZodTypeAny>({
-  schema,
-  defaultValues,
-  onSubmitValid,
-  onSubmitInvalid,
-  children,
-}: PropsWithChildren<TestFormComponentProps<Schema>>) {
-  const formMethod = useForm({ resolver: zodResolver(schema), defaultValues });
-
-  return (
-    <FormProvider {...formMethod}>
-      <form onSubmit={formMethod.handleSubmit(onSubmitValid, onSubmitInvalid)}>
-        {children}
-        <button type="submit">{SubmitButtonTextContent}</button>
-      </form>
-    </FormProvider>
-  );
-}
+import { SubmitButtonTextContent, TestZodFormComponent } from './components/TestZodFormComponent';
 
 describe('Does the FieldErrorExtractor extract data well for various field types', () => {
   const submitResultTestFn = jest.fn();
@@ -70,7 +41,7 @@ describe('Does the FieldErrorExtractor extract data well for various field types
 
     const user = userEvent.setup();
     const { getByPlaceholderText, getByText } = render(
-      <TestFormComponent
+      <TestZodFormComponent
         schema={formFiledValuesSchema}
         defaultValues={{
           limitMinStringField: '',
@@ -87,7 +58,7 @@ describe('Does the FieldErrorExtractor extract data well for various field types
         }}
       >
         <TestFields />
-      </TestFormComponent>,
+      </TestZodFormComponent>,
     );
 
     // When the minimum input field rule is violated.
@@ -146,7 +117,7 @@ describe('Does the FieldErrorExtractor extract data well for various field types
 
     const user = userEvent.setup();
     const { getByPlaceholderText, getByText } = render(
-      <TestFormComponent
+      <TestZodFormComponent
         schema={formFiledValuesSchema}
         defaultValues={{ fieldSet: { fieldList: [{ field: '' }, { field: '' }, { field: '' }] } }}
         onSubmitValid={(data) => {
@@ -158,7 +129,7 @@ describe('Does the FieldErrorExtractor extract data well for various field types
         }}
       >
         <TestFields />
-      </TestFormComponent>,
+      </TestZodFormComponent>,
     );
 
     // When all field rules are violated.
@@ -205,7 +176,7 @@ describe('Does the FieldErrorExtractor extract data well for various field types
 
     const user = userEvent.setup();
     const { getByPlaceholderText, getByText } = render(
-      <TestFormComponent
+      <TestZodFormComponent
         schema={formFiledValuesSchema}
         defaultValues={{
           fieldSet: {
@@ -221,7 +192,7 @@ describe('Does the FieldErrorExtractor extract data well for various field types
         }}
       >
         <TestFields />
-      </TestFormComponent>,
+      </TestZodFormComponent>,
     );
 
     // When field rule violated.
