@@ -4,8 +4,12 @@
   "description": "Extract a single representative error message from React Hook Form FieldErrors.",
   "main": "dist/index.cjs",
   "module": "dist/index.esm.js",
+  "source": "src/index.ts",
   "types": "dist/index.d.ts",
-  "repository": "https://hangem422@github.com/hangem422/rhf-field-errors-extractor.git",
+  "repository": {
+    "type": "git",
+    "url": "https://hangem422@github.com/hangem422/rhf-field-errors-extractor.git"
+  },
   "author": "Hant <hangem422@gmail.com>",
   "license": "MIT",
   "files": [
@@ -16,6 +20,11 @@
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc && rollup --bundleConfigAsCjs -c ./scripts/rollup/rollup.config.js"
   },
+  "keywords": [
+    "react-hook-form",
+    "rhf",
+    "fieldErrors"
+  ],
   "devDependencies": {
     "@hookform/resolvers": "^5.0.1",
     "@rollup/plugin-commonjs": "^28.0.5",
