@@ -2,15 +2,35 @@
   "name": "rhf-field-errors-extractor",
   "version": "1.0.0",
   "description": "Extract a single representative error message from React Hook Form FieldErrors.",
-  "main": "index.js",
-  "repository": "https://hangem422@github.com/hangem422/rhf-field-errors-extractor.git",
+  "main": "dist/index.cjs",
+  "module": "dist/index.esm.js",
+  "source": "src/index.ts",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://hangem422@github.com/hangem422/rhf-field-errors-extractor.git"
+  },
   "author": "Hant <hangem422@gmail.com>",
   "license": "MIT",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "test": "jest --config ./scripts/jest/jest.config.ts"
+    "test": "jest --config ./scripts/jest/jest.config.ts",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc && rollup --bundleConfigAsCjs -c ./scripts/rollup/rollup.config.js"
   },
+  "keywords": [
+    "react-hook-form",
+    "rhf",
+    "fieldErrors"
+  ],
   "devDependencies": {
     "@hookform/resolvers": "^5.0.1",
+    "@rollup/plugin-commonjs": "^28.0.5",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.2",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -31,6 +51,8 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.56.3",
+    "rollup": "^4.43.0",
+    "rollup-plugin-dts": "^6.2.1",
     "ts-jest": "^29.3.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
